@@ -65,12 +65,23 @@ const userSchema = new mongoose.Schema(
 // called @/routers/user.js, route for login 
 userSchema.methods.generateAuthToken = async function () {
     const user = this 
-    const token = jwt.sign({ _id: user._id.toString() },'thisismynewcourse')
+    const token = jwt.sign({ _id: user._id.toString() },'thisismynewcourse') // when sign , time is another param 
     
     user.tokens = user.tokens.concat({ token })
     await user.save()
     
     return token
+}
+
+// arrow func doesn't work well in the 'this' case if bebel is not used (Remember the react course we use bebel)
+userSchema.methods.toJSON = function (){
+    const user = this
+    const userObject = user.toObject() // a mongoose method
+
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject 
 }
 
 // 105 Logging in Users 
