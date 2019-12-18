@@ -28,7 +28,7 @@ router.post('/users/login',async (req, res) => {
         const token = await user.generateAuthToken()
         res.send({ user,token})
     } catch(e) {
-        res.status(400).send()
+        res.status(400).send('login error')
     }
 })
 
@@ -84,7 +84,7 @@ router.get('/users/:id', async (req,res)=>{
     
 })
 
-router.patch('/users/:id', async (req,res)=>{
+router.patch('/users/me',auth , async (req,res)=>{
     const allowedUpdates = ["name", "email","password", "age"]
     const updates = Object.keys(req.body)
     const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))
@@ -94,13 +94,13 @@ router.patch('/users/:id', async (req,res)=>{
     }
     
     try{
-        // 104 securely sotring password 
-        const user = await User.findById(req.params.id)
-
+        // const user = req.user.toObject()
+        // this will fail as toObject() will convert req.user to an object which cannot save into mongodb later
+        const user = req.user
         updates.forEach((update)=>{
             user[update] = req.body[update]
         })
-
+        console.log(user)
         await user.save()
 
         // the line below is the assiging the user without touching the express middleware for securely storing password@104
@@ -117,17 +117,12 @@ router.patch('/users/:id', async (req,res)=>{
     }
 })
 
-router.delete('/users/:id', async (req, res) =>{
+router.delete('/users/me', auth, async (req, res) =>{
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
-
-        if(!user) {
-            return res.status(404).send()
-        }
-
-        res.send(user)
+        await req.user.remove()
+        res.send(req.user)
     } catch(e) {
-        res.status(500).send()
+        res.status(500).send(e)
     }
 })
 

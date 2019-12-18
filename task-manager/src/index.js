@@ -28,9 +28,13 @@ app.listen(port, () => {
     console.log('Server is up on port' + port)
 })
 
+
+// Object.toJSON is a func that will called before before JSON.stringify is trigger 
+// note that every res.send({sth}) will trigger JSON.stringify({sth})
 // const pet = {
 //     name: 'Hal'
 // }
+
 
 // pet.toJSON = function (){
 //     console.log(this)
@@ -39,5 +43,15 @@ app.listen(port, () => {
 
 // console.log(JSON.stringify(pet))
 
-// // { name: 'Hal', toJSON: [Function] }
-// // {"name":"Hal"}
+        // { name: 'Hal', toJSON: [Function] }
+        // {"name":"Hal"}
+
+
+// pet.toJSON = function (){
+//     return {}
+// }
+
+// console.log(JSON.stringify(pet))
+
+        // {}
+

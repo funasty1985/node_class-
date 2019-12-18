@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
         const decoded = jwt.verify(token, "thisismynewcourse")  // return the signed item and the signning time
         const user = await User.findOne({ _id: decoded._id, "tokens.token": token })
         if (!user) {
-            throw new Error()
+            throw new Error('no such user')
         }
         
         // we create a field in user obj and put the value of the const user in it 
