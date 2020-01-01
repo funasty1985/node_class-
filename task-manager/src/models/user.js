@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Task = require('./task')
 
 
 // 104 Securely Storing Passwords : Part II 
@@ -129,6 +130,13 @@ userSchema.pre('save', async function(next) {
     // next() must called for the func to be completed 
     // if next() is not here, this callback will be hang right here 
     // and save() will never be executed 
+    next()
+})
+
+// Delete user tasks when user is removed 
+userSchema.pre('remove', async function(next){
+    const user = this
+    await Task.deleteMany({ owner: user._id })
     next()
 })
 
