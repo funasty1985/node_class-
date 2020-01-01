@@ -58,6 +58,15 @@ const userSchema = new mongoose.Schema(
     }
 )
 
+// setting up virtual attribute 
+// myTasks is a virtual which is not stored in database 
+// this is constrast to the owner field in task model 
+userSchema.virtual('myTasks',{
+    ref: 'Tasks',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
 // 107 Generating Authentication Tokens 
 // Generate after userSchema is instantiated 
 // This is not a function , but a method for a Model instance 
@@ -123,6 +132,7 @@ userSchema.pre('save', async function(next) {
     next()
 })
 
+// The model name is useful when other models take reference to this model 
 const User = mongoose.model('User', userSchema)
 
 module.exports = User 

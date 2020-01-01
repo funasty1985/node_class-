@@ -28,30 +28,17 @@ app.listen(port, () => {
     console.log('Server is up on port' + port)
 })
 
+const Task = require('./models/task')
+const User = require('./models/user')
 
-// Object.toJSON is a func that will called before before JSON.stringify is trigger 
-// note that every res.send({sth}) will trigger JSON.stringify({sth})
-// const pet = {
-//     name: 'Hal'
-// }
+const main = async () => {
+        // const task = await Task.findById('5e0c5b9686607c12f899843e')
+        // await task.populate('owner').execPopulate()
+        // console.log(task.owner)
 
+        // const user = await User.findById('5e0c5b7086607c12f899843c')
+        // await user.populate('myTasks').execPopulate()
+        // console.log(user.myTasks)
+} 
 
-// pet.toJSON = function (){
-//     console.log(this)
-//     return this
-// }
-
-// console.log(JSON.stringify(pet))
-
-        // { name: 'Hal', toJSON: [Function] }
-        // {"name":"Hal"}
-
-
-// pet.toJSON = function (){
-//     return {}
-// }
-
-// console.log(JSON.stringify(pet))
-
-        // {}
-
+main()
