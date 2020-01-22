@@ -47,10 +47,21 @@ router.patch('/tasks/:id', auth, async(req,res)=>{
     
 })
 
+// GET /tasks?completed=false 
 router.get('/tasks',auth , async (req,res)=>{
     const user = req.user
+    const match = {}
+
+    if (req.query.completed){
+        match.completed = req.query.completed === 'true'
+    }
+
     try {
-        await user.populate('myTasks').execPopulate()
+        // await user.populate('myTasks').execPopulate()
+        await req.user.populate({
+            path: 'myTasks',
+            match
+        }).execPopulate()
         res.send(user.myTasks)
     } catch (e){
         res.status(500).send(e)
