@@ -48,6 +48,7 @@ router.patch('/tasks/:id', auth, async(req,res)=>{
 })
 
 // GET /tasks?completed=false 
+// GET /tasks?limit=10&skip=0
 router.get('/tasks',auth , async (req,res)=>{
     const user = req.user
     const match = {}
@@ -58,9 +59,14 @@ router.get('/tasks',auth , async (req,res)=>{
 
     try {
         // await user.populate('myTasks').execPopulate()
+        // myTasks is the name of a model created
         await req.user.populate({
             path: 'myTasks',
-            match
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)
+            }
         }).execPopulate()
         res.send(user.myTasks)
     } catch (e){
