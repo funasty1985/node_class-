@@ -149,6 +149,8 @@ const upload = multer({
 // the same name as the field carring the upload file in the json posted 
 router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
     res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
 })
 
 
