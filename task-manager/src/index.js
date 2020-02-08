@@ -7,32 +7,6 @@ const taskRouter = require('./routers/task')
 const app = express()
 const port = process.env.PORT || 3000
 
-const multer = require('multer')
-const upload = multer({
-    dest: 'images',
-    limits: {
-        fileSize: 1000000, //1MB
-    },
-    fileFilter(req, file, cb){
-        if (!file.originalname.match(/\.(doc|docx)$/)){
-            return cb(new Error('Please upload a Word document')) // #
-        }
-
-        cb(undefined, true)
-        // cb(new Error('File must be a PDF'))
-        // cb(undefined, true)
-        // cb(undefined, false)
-    }
-})
-
-app.post('/upload', upload.single('upload'),(req, res) => {
-    res.send()
-}, (error, req, res, next)=> {
-    res.status(400).send({error: error.message})   // error message is referred to #
-})                                                 // used to handle error message from middleware 
-                                                   // unlike auth middleware which we write your custom try catch case 
-                                                   // single is a default middleware from multer and we
-                                                   // have to handle error from it in this way 
 app.use(express.json())
 app.use(userRouter)
 app.use(taskRouter)
