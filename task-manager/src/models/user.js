@@ -81,7 +81,7 @@ userSchema.virtual('myTasks',{
 // called @/routers/user.js, route for login 
 userSchema.methods.generateAuthToken = async function () {
     const user = this 
-    const token = jwt.sign({ _id: user._id.toString() },'thisismynewcourse') // when sign , time is another param 
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET) // when sign , time is another param 
     
     user.tokens = user.tokens.concat({ token })
     await user.save()
