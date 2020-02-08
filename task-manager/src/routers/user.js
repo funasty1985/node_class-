@@ -3,6 +3,7 @@ const User = require('../models/user')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 const multer = require('multer')
+const sharp = require('sharp')
 
 router.post('/users', async (req,res)=>{
     const user = new　User(req.body)
@@ -149,7 +150,11 @@ const upload = multer({
 // the same name as the field carring the upload file in the json posted 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     // remeber that req.user is returned from the auth middleware
-    req.user.avatar = req.file.buffer // req.file.buffer stores the binary data, this requires the 'upload' var above not setting dest property.
+    // req.user.avatar = req.file.buffer => req.file.buffer stores the binary data, this requires the 'upload' var above not setting dest property.
+
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height:250 }).png().toBuffer()
+    req.user.avatar = buffer
+
     await req.user.save()
     res.send()
 }, (error, req, res, next) => {
@@ -170,10 +175,12 @@ router.get('/users/:id/avatar', async (req, res) => {
             throw new Error()
         }
 
-        res.set('Conten-Type', 'image/jpg') // setting header for response
+        res.set('Conten-Type', 'image/png') // setting header for response
         res.send(user.avatar)
     } catch (e) {
         res.status(404).send()
     }
 })
+
+
 module.exports = router
