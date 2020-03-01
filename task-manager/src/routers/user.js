@@ -104,7 +104,6 @@ router.patch('/users/me',auth , async (req,res)=>{
         updates.forEach((update)=>{
             user[update] = req.body[update]
         })
-        console.log(user)
         await user.save()
 
         // the line below is the assiging the user without touching the express middleware for securely storing password@104
