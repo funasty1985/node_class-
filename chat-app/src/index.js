@@ -14,8 +14,18 @@ const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
 
-io.on('connection',()=>{
+let count = 0
+
+io.on('connection',(socket)=>{
     console.log('New WebSocket connection')
+
+    socket.emit('countUpdated', count)  // countUpdatted is an event emitted from the server 
+
+    socket.on('increment', ()=> {
+        count++
+        // socket.emit('countUpdated', count) // event when only emitted to a particular socket
+        io.emit('countUpdated', count)        // event is emiited to every socket connected
+    })
 })
 
 server.listen(port, ()=>{
