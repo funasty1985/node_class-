@@ -26,7 +26,10 @@ io.on('connection',(socket)=>{
     socket.broadcast.emit('message', 'A new user has joined')  // the message will be sent to every socket except to the one connected to this current socket
     
     socket.on('sendLocation', (coords, callback)=> {
-        io.emit('message', `http://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        
+        const url = `http://google.com/maps?q=${coords.latitude},${coords.longitude}`
+        
+        io.emit('locationMessage', url)
         callback()      
     })
 

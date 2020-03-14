@@ -9,6 +9,7 @@ const $messages = document.querySelector('#message')
 
 // Template
 const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationTemplate = document.querySelector('#location-message-template').innerHTML
 
 socket.on('message', (msg) => {
     console.log(msg)
@@ -17,6 +18,16 @@ socket.on('message', (msg) => {
     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
+
+socket.on('locationMessage', (url)=>{
+    console.log(url)
+    const html = Mustache.render(locationTemplate, {
+        url
+    })
+    $messages.insertAdjacentHTML('beforeend', html)
+})
+
+
 
 $messageForm.addEventListener('submit', (e)=>{
     e.preventDefault() // prevent the submit of html form to reload the page
