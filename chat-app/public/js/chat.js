@@ -5,7 +5,7 @@ socket.on('message', (msg) => {
 })
 
 document.querySelector('#message-form').addEventListener('submit', (e)=>{
-    e.preventDefault()
+    e.preventDefault() // prevent the submit of html form to reload the page
     
     const clientMsg = e.target.elements.message.value
     

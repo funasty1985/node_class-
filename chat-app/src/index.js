@@ -14,14 +14,21 @@ const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
 
+// 'connection' and 'disconnect' are the build in event 
 io.on('connection',(socket)=>{
+    console.log('New WebSocket connection')
 
     const msg = 'Welcome! You are connected.'
 
     socket.emit('message', msg)
+    socket.broadcast.emit('message', 'A new user has joined')  // the message will be sent to every socket except to the one connected to this current socket
 
     socket.on('clientMsg', (clientMsg) => {
         io.emit('message', clientMsg )
+    })
+
+    socket.on('disconnect', () => {
+        io.emit('message', 'A user has left')
     })
 })
 
