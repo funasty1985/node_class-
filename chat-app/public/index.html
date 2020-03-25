@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 
 <html>
-    <head></head>
+    <head>
+        <title>Chat App</title>
+        <Link rel="icon" href="/img/favicon.png">
+        <Link rel="stylesheet" href="/css/styles.min.css"> 
+    </head>
 
     <body>
+
+        <div class="chat">
+            <div class="chat__sidebar">
+
+            </div>
+            <div class="chat__main">
+                <div id="message" class="chat__messages"></div>
+
+                <div class="compose">
+                    <form id='message-form'>
+                        <input type="text" id="myInput" name='message'>
+                        <button id="submitButton" type="submit">Send</button>
+                    </form>
+                    <button id="send-location">Send Location</button>
+                </div>
+            </div>
+        </div>
         <h1>Chat App</h1>
 
-        <div id="message"></div>
-
-        <form id='message-form'>
-            <input type="text" id="myInput" name='message'>
-            <input id="submitButton" type="submit">
-        </form>
-        <button id="send-location">Send Location</button>
+        
 
         <script id="message-template" type="text/html">
-            <div>
-                <p>{{createAt}} - {{message}}</p>
+            <div class="message">
+                <p>
+                    <span class="message__name">Some User Name</span>
+                    <span class="message_meta">{{createAt}}</span>
+                </p>
+                <p>{{message}}</p>
             </div>
         </script>
 
         <script id="location-message-template" type="text/html">
-            <div>
-                <a href={{url}} target="_blank">{{createAt}} - My Location</a>
-            </div>
+            <div class="message">
+                    <p>
+                        <span class="message__name">Some User Name</span>
+                        <span class="message_meta">{{createAt}}</span>
+                    </p>
+                    <p><a href={{url}} target="_blank">{{createAt}} - My Location</a></p>
+                </div>
         </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
