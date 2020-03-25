@@ -5,6 +5,14 @@ const generatedMessage = (text) => {
     }
 }
 
+const generateLocationMessage = (url) => {
+    return {
+        url,
+        createAt: new Date().getTime()
+    }
+}
+
 module.exports = {
-    generatedMessage
+    generatedMessage,
+    generateLocationMessage
 }
