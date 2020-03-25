@@ -3,6 +3,7 @@ const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
+const { generatedMessage } = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)  // express do this behind the scene 
@@ -19,11 +20,9 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection',(socket)=>{
     console.log('New WebSocket connection')
 
-    const msg = 'Welcome! You are connected.'
+    socket.emit('message', generatedMessage('Welcome!'))
 
-    socket.emit('message', msg)
-
-    socket.broadcast.emit('message', 'A new user has joined')  // the message will be sent to every socket except to the one connected to this current socket
+    socket.broadcast.emit('message', generatedMessage('A new user has joined'))  // the message will be sent to every socket except to the one connected to this current socket
     
     socket.on('sendLocation', (coords, callback)=> {
         
@@ -40,12 +39,12 @@ io.on('connection',(socket)=>{
             return callback('Profanity is not allowed')
         }
 
-        io.emit('message', clientMsg )
+        io.emit('message', generatedMessage(clientMsg) )
         callback()   // calling the acknowledgement function
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left')
+        io.emit('message', generatedMessage('A user has left'))
     })
 })
 
