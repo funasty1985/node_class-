@@ -44,6 +44,11 @@ io.on('connection',(socket)=>{
         socket.emit('message', generatedMessage('Admin','Welcome!'))
         socket.broadcast.to(user.room).emit('message', generatedMessage(`${user.username} has joined!`)) 
 
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
+
         callback() // acknowledge function call for successful connection
     })
 
@@ -66,6 +71,11 @@ io.on('connection',(socket)=>{
 
         if(exitingUser){
             io.to(exitingUser.room).emit('message', generatedMessage('Admin',`${exitingUser.username} has left!`))
+
+            io.to(exitingUser.room).emit('roomData', {
+                room: exitingUser.room,
+                users: getUsersInRoom(exitingUser.room)
+            })
         }
 
         
