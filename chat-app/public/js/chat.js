@@ -15,6 +15,46 @@ const sidebarTemplate = document.querySelector('#siderbar-Template').innerHTML
 // Option
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })  //location.search is a build-in variable in broswer
 
+const autoscroll = () => {
+    // New message element 
+    const $newMessage = $messages.lastElementChild
+
+    // Height of the new message
+    const newMessageStyles = getComputedStyle($newMessage)
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom)
+    
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    // Visiable Height , it is the sum of each messages height 
+    // until the sum reaches the visiable height of the element 
+    // in the broswer, by then, it is the visiable height of that 
+    // element
+    const VisiableHeight = $messages.offsetHeight
+
+    // Height of messages container (content)
+    const containerHeight = $messages.scrollHeight
+
+    // $messages.scrollTop : the amount of distance the between the top and the top of the scroll bar 
+    // if we don't scroll , scrollOfffset = VisiableHeight(that is the visiable height of element 'message')
+    // if there are room to scroll (ie containerHeight > VisiableHeight) 
+    // and we scroll,
+    // scrollOfffset = $messages.scrollTop + VisiableHeight (ie how far do we scroll)
+    const scrollOfffset = $messages.scrollTop + VisiableHeight
+    console.log(scrollOfffset)
+    // containerHeight - newMessageHeight is Height of the messages content excluding the latest message
+    // by expression, we want to make sure we are at the bottom before the new message is added
+    // and autoscroll we only take place it this situation
+    if (containerHeight - newMessageHeight <= scrollOfffset) {
+        // other than reaing the value of scrollTop top like above ,
+        // we can assign value to it.
+        $messages.scrollTop = $messages.scrollHeight
+    }
+
+
+
+
+}
+
 socket.on('message', (msg) => {
     console.log(msg)
     const html = Mustache.render(messageTemplate, {
@@ -23,6 +63,7 @@ socket.on('message', (msg) => {
         createAt: moment(message.createAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
+    autoscroll()
 })
 
 socket.on('locationMessage', ({username, url, createAt})=>{
@@ -33,6 +74,7 @@ socket.on('locationMessage', ({username, url, createAt})=>{
         createAt: moment(message.createAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
+    autoscroll()
 })
 
 socket.on('roomData', ({room, users})=> {
