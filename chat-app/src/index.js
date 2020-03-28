@@ -20,9 +20,9 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection',(socket)=>{
     console.log('New WebSocket connection')
 
-    socket.emit('message', generatedMessage('Welcome!'))
+    // socket.emit('message', generatedMessage('Welcome!'))
 
-    socket.broadcast.emit('message', generatedMessage('A new user has joined'))  // the message will be sent to every socket except to the one connected to this current socket
+    // socket.broadcast.emit('message', generatedMessage('A new user has joined'))  // the message will be sent to every socket except to the one connected to this current socket
     
     socket.on('sendLocation', (coords, callback)=> {
         
@@ -32,6 +32,14 @@ io.on('connection',(socket)=>{
         callback()      
     })
 
+    socket.on('join', ({ username, room }) => {
+        console.log(`${username}--${room}`)
+        socket.join(room) 
+
+        socket.emit('message', generatedMessage('Welcome!'))
+        socket.broadcast.to(room).emit('message', generatedMessage(`${username} has joined!`)) 
+    })
+
     socket.on('clientMsg', (clientMsg, callback) => {
         const filter = new Filter()
 
@@ -39,7 +47,7 @@ io.on('connection',(socket)=>{
             return callback('Profanity is not allowed')
         }
 
-        io.emit('message', generatedMessage(clientMsg) )
+        io.to('Center City').emit('message', generatedMessage(clientMsg) )
         callback()   // calling the acknowledgement function
     })
 
