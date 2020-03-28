@@ -4,6 +4,7 @@ const path = require('path')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
 const { generatedMessage, generateLocationMessage } = require('./utils/messages')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)  // express do this behind the scene 
@@ -20,10 +21,7 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection',(socket)=>{
     console.log('New WebSocket connection')
 
-    // socket.emit('message', generatedMessage('Welcome!'))
 
-    // socket.broadcast.emit('message', generatedMessage('A new user has joined'))  // the message will be sent to every socket except to the one connected to this current socket
-    
     socket.on('sendLocation', (coords, callback)=> {
         
         const url = `http://google.com/maps?q=${coords.latitude},${coords.longitude}`
@@ -32,12 +30,19 @@ io.on('connection',(socket)=>{
         callback()      
     })
 
-    socket.on('join', ({ username, room }) => {
-        console.log(`${username}--${room}`)
-        socket.join(room) 
+    socket.on('join', (options, callback) => {
+        const { error, user } = addUser({ id: socket.id, ...options }) // socket.id is unqiue for every socket connection
+
+        if (error) {
+           return callback(error)
+        }
+
+        socket.join(user.room) 
 
         socket.emit('message', generatedMessage('Welcome!'))
-        socket.broadcast.to(room).emit('message', generatedMessage(`${username} has joined!`)) 
+        socket.broadcast.to(user.room).emit('message', generatedMessage(`${user.username} has joined!`)) 
+
+        callback() // acknowledge function call for successful connection
     })
 
     socket.on('clientMsg', (clientMsg, callback) => {
@@ -52,7 +57,13 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', generatedMessage('A user has left'))
+        const exitingUser = removeUser(socket.id)
+
+        if(exitingUser){
+            io.to(exitingUser.room).emit('message', generatedMessage(`${exitingUser.username} has left!`))
+        }
+
+        
     })
 })
 
