@@ -23,14 +23,16 @@ io.on('connection',(socket)=>{
 
 
     socket.on('sendLocation', (coords, callback)=> {
+
+        const {username, room} = getUser(socket.id)
         
         const url = `http://google.com/maps?q=${coords.latitude},${coords.longitude}`
         
-        io.emit('locationMessage', generateLocationMessage(url))
+        io.to(room).emit('locationMessage', generateLocationMessage(username, url))
         callback()      
     })
 
-    socket.on('join', (options, callback) => {
+    socket.on('join', (options, callback) => { 
         const { error, user } = addUser({ id: socket.id, ...options }) // socket.id is unqiue for every socket connection
 
         if (error) {
@@ -39,20 +41,23 @@ io.on('connection',(socket)=>{
 
         socket.join(user.room) 
 
-        socket.emit('message', generatedMessage('Welcome!'))
+        socket.emit('message', generatedMessage('Admin','Welcome!'))
         socket.broadcast.to(user.room).emit('message', generatedMessage(`${user.username} has joined!`)) 
 
         callback() // acknowledge function call for successful connection
     })
 
     socket.on('clientMsg', (clientMsg, callback) => {
+
+        const {username, room} = getUser(socket.id)
+
         const filter = new Filter()
 
         if(filter.isProfane(clientMsg)){
             return callback('Profanity is not allowed')
         }
 
-        io.to('Center City').emit('message', generatedMessage(clientMsg) )
+        io.to(room).emit('message', generatedMessage(username, clientMsg) )
         callback()   // calling the acknowledgement function
     })
 
@@ -60,7 +65,7 @@ io.on('connection',(socket)=>{
         const exitingUser = removeUser(socket.id)
 
         if(exitingUser){
-            io.to(exitingUser.room).emit('message', generatedMessage(`${exitingUser.username} has left!`))
+            io.to(exitingUser.room).emit('message', generatedMessage('Admin',`${exitingUser.username} has left!`))
         }
 
         
